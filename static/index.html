@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SubSloth AI 🦥 — The Zombie Subscription & Dark Pattern Legal Canceller</title>
+  <meta name="description" content="Automated dark pattern detection and FTC Click-to-Cancel enforcement powered by Google Gemma 2, Backboard Memory, and Render.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="sloth-dark">
+  <div class="background-glow top-left"></div>
+  <div class="background-glow bottom-right"></div>
+
+  <!-- Header Navigation -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="logo-group">
+        <div class="sloth-badge-icon">🦥</div>
+        <div>
+          <h1 class="logo-title">SubSloth <span class="highlight">AI</span></h1>
+          <p class="logo-subtitle">Channeling Sloths to Kill Dark Patterns & Save Cash</p>
+        </div>
+      </div>
+      <div class="sponsor-badges">
+        <span class="badge badge-ftc">⚖️ FTC 16 CFR § 425</span>
+        <span class="badge badge-render">🚀 Render Live</span>
+        <span class="badge badge-gemma">🧠 Google Gemma 2</span>
+        <span class="badge badge-backboard">⚡ Backboard Memory</span>
+        <a href="/docs" target="_blank" class="badge badge-docs">📑 OpenAPI Docs</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+    
+    <!-- Hero Pitch Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <span class="sloth-pill">International Sloth Day 2026 Hackathon Build</span>
+        <h2 class="hero-headline">Too Lazy to Cancel Sneaky Subscriptions? <br><span class="gradient-text">Let SubSloth Enforce Federal Law While You Nap.</span></h2>
+        <p class="hero-desc">
+          Subscription companies intentionally make cancellation painful with phone queues, certified mail traps, and dark patterns.
+          Drop your bank statement snippet — our <strong>3-Layer Engine</strong> deterministically catches dark patterns and uses <strong>Google Gemma 2</strong> to generate legally binding <strong>FTC Click-to-Cancel</strong> notices and bank chargeback affidavits.
+        </p>
+      </div>
+    </section>
+
+    <!-- The Lazy Payoff Counter Dashboard -->
+    <section class="payoff-dashboard">
+      <div class="metric-card glow-green">
+        <div class="metric-icon">💰</div>
+        <div class="metric-data">
+          <span class="metric-label">Annual Money Rescued</span>
+          <span class="metric-value" id="annual-rescued">$0.00</span>
+          <span class="metric-sub">Protected from zombie charges</span>
+        </div>
+      </div>
+
+      <div class="metric-card glow-cyan">
+        <div class="metric-icon">📉</div>
+        <div class="metric-data">
+          <span class="metric-label">Monthly Leakage Plugged</span>
+          <span class="metric-value" id="monthly-leak">$0.00</span>
+          <span class="metric-sub">Recurring cash saved per month</span>
+        </div>
+      </div>
+
+      <div class="metric-card glow-purple">
+        <div class="metric-icon">⏳</div>
+        <div class="metric-data">
+          <span class="metric-label">Dreaded Phone Call Hours Avoided</span>
+          <span class="metric-value" id="hours-avoided">0.0 hrs</span>
+          <span class="metric-sub">Pure couch relaxation preserved</span>
+        </div>
+      </div>
+
+      <div class="metric-card glow-amber">
+        <div class="metric-icon">🦥</div>
+        <div class="metric-data">
+          <span class="metric-label">Sloth State Gauge</span>
+          <span class="metric-value status-tag" id="sloth-state">Chilling</span>
+          <span class="metric-sub" id="dark-pattern-count">0 Dark Patterns Flagged</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Zero-Click Judge Benchmarks -->
+    <section class="benchmarks-section">
+      <div class="section-header">
+        <div class="header-left">
+          <h3>⚡ Zero-Click Judge Benchmarks</h3>
+          <p>Click any preset to instantly test our deterministic engine against real-world dark patterns:</p>
+        </div>
+        <button id="btn-memory-view" class="btn-secondary">🧠 Inspect Backboard Memory (<span id="memory-count">0</span>)</button>
+      </div>
+
+      <div class="benchmark-grid" id="benchmark-buttons-container">
+        <!-- Rendered dynamically via app.js -->
+        <button class="benchmark-btn" data-preset="gym_trap">
+          <span class="btn-emoji">🏋️‍♂️</span>
+          <div class="btn-meta">
+            <strong>The Gym Trap</strong>
+            <small>Planet Fitness In-Person Barrier</small>
+          </div>
+        </button>
+        <button class="benchmark-btn" data-preset="sneaky_saas">
+          <span class="btn-emoji">💻</span>
+          <div class="btn-meta">
+            <strong>The Sneaky SaaS</strong>
+            <small>14-Day Trial Auto-Converted $79</small>
+          </div>
+        </button>
+        <button class="benchmark-btn" data-preset="ghost_micro_fee">
+          <span class="btn-emoji">👻</span>
+          <div class="btn-meta">
+            <strong>The Ghost Micro-Fee</strong>
+            <small>StreamMax Undisclosed 4K Addon</small>
+          </div>
+        </button>
+        <button class="benchmark-btn" data-preset="multi_subscription_chaos">
+          <span class="btn-emoji">🦥</span>
+          <div class="btn-meta">
+            <strong>Combined Sloth Audit</strong>
+            <small>Multi-Merchant Statement Dump</small>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <!-- Interactive Workbench Area -->
+    <section class="workbench-grid">
+      <!-- Input Panel -->
+      <div class="panel card-glass input-panel">
+        <div class="panel-header">
+          <h3>📋 Paste Bank / Card Statement Snippet</h3>
+          <span class="panel-badge">Layer 1 Ingestion</span>
+        </div>
+        <p class="panel-desc">Paste lines from online banking, credit card CSV, or SMS transaction alerts:</p>
+        <textarea id="statement-input" class="statement-textarea" rows="7" placeholder="Paste statement lines here... (e.g. 2026-10-01 PLANET FITNESS DALLAS TX $29.99/MO - in-person cancel required)"></textarea>
+        
+        <div class="action-bar">
+          <button id="btn-run-audit" class="btn-primary">
+            <span class="btn-spinner hidden" id="audit-spinner"></span>
+            🦥 Run Sloth Audit
+          </button>
+          <button id="btn-clear" class="btn-ghost">Clear</button>
+        </div>
+      </div>
+
+      <!-- Execution Trace Panel -->
+      <div class="panel card-glass trace-panel">
+        <div class="panel-header">
+          <h3>⚡ 3-Layer Defense Pipeline Trace</h3>
+          <span class="panel-badge badge-active" id="pipeline-status">Idle</span>
+        </div>
+        <div class="trace-feed" id="trace-feed">
+          <div class="trace-step trace-idle">
+            <span class="step-num">[0]</span>
+            <span class="step-text">Awaiting statement input or benchmark click...</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Audit Results Section -->
+    <section class="results-section hidden" id="results-section">
+      <div class="section-title-bar">
+        <h3>🔍 Detected Subscriptions & Dark Pattern Violations</h3>
+        <span class="results-summary-tag" id="results-summary-badge">0 Subscriptions Detected</span>
+      </div>
+
+      <div class="subscriptions-grid" id="subscriptions-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- 3-Tier Escalation Modal -->
+    <div class="modal-overlay hidden" id="escalation-modal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div>
+            <h3 id="modal-merchant-title">Planet Fitness Escalation Notice</h3>
+            <p class="modal-subtitle" id="modal-legal-basis">Citing 16 CFR Part 425 § 425.6</p>
+          </div>
+          <button class="modal-close" id="btn-modal-close">&times;</button>
+        </div>
+
+        <!-- 3-Tier Tabs -->
+        <div class="modal-tabs">
+          <button class="tab-btn active" data-tier="tier_1">✉️ Tier 1: Diplomatic Request</button>
+          <button class="tab-btn" data-tier="tier_2">⚖️ Tier 2: FTC Legal Notice</button>
+          <button class="tab-btn" data-tier="tier_3">🏦 Tier 3: Bank Chargeback Affidavit</button>
+        </div>
+
+        <div class="modal-body">
+          <div class="tier-explanation" id="tier-explanation">
+            <strong>Diplomatic Request:</strong> Gentle 1-click customer service cancellation with explicit account reference.
+          </div>
+          <pre class="notice-pre" id="notice-content">Loading notice draft...</pre>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn-primary" id="btn-copy-notice">📋 Copy Document to Clipboard</button>
+          <button class="btn-secondary" id="btn-modal-dismiss">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Backboard Memory Inspector Modal -->
+    <div class="modal-overlay hidden" id="memory-modal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div>
+            <h3>⚡ Backboard Memory Store</h3>
+            <p class="modal-subtitle">Persistent cancellation state preventing merchant zombie rebills</p>
+          </div>
+          <button class="modal-close" id="btn-memory-close">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="memory-info-box">
+            Backboard Memory records every cancelled merchant and notice ID. When a future statement audit detects recurring debits from a cancelled merchant, it immediately triggers an unauthorized <strong>EFTA Reg E Zombie Alert</strong>.
+          </p>
+          <div class="memory-records-list" id="memory-records-list">
+            <div class="empty-memory">No active cancellations saved in memory yet. Run an audit and click 'Escalate' to track one!</div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-amber" id="btn-simulate-zombie">🧟 Simulate Zombie Rebilling Attack</button>
+          <button class="btn-secondary" id="btn-memory-dismiss">Close</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>SubSloth AI 🦥 — Built for <strong>Hacktoberfest 2026 Week 3: Slow & Steady</strong>. Open-source under MIT License.</p>
+      <div class="footer-links">
+        <a href="https://github.com/diusazzad" target="_blank">GitHub</a>
+        <a href="/docs" target="_blank">OpenAPI Docs</a>
+        <a href="https://render.com" target="_blank">Deployed on Render</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
