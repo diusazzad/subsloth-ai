@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css?v=2.1">
+  <link rel="stylesheet" href="/static/style.css?v=2.2">
   <script>
     // Default to 'light' (White mode)
     (function() {
@@ -41,8 +41,8 @@
         <span class="badge badge-guardrail">🛡️ Deterministic Citation Guardrail</span>
         <a href="/docs" target="_blank" class="badge badge-docs">📑 OpenAPI Docs</a>
         <!-- Theme Toggle Button: Light / Dark -->
-        <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Toggle light or dark theme" title="Switch Theme">
-          <span class="theme-icon" id="theme-icon">🌙</span>
+        <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Switch to Dark Mode" title="Switch to Dark Mode">
+          <span class="theme-icon" id="theme-icon" aria-hidden="true">🌙</span>
           <span class="theme-label" id="theme-label">Dark Mode</span>
         </button>
       </div>
@@ -145,8 +145,8 @@
           <p>Click any preset to instantly test our deterministic engine against curated dark patterns:</p>
         </div>
         <div style="display: flex; gap: 0.5rem; align-items: center;">
-          <button id="btn-run-eval" class="btn-secondary" style="background: rgba(16, 185, 129, 0.15); border-color: #10b981; color: #a7f3d0;">📊 Run 6-Case Parser Benchmark</button>
-          <button id="btn-memory-view" class="btn-secondary">📋 Inspect Cancellation Records (<span id="memory-count">0</span>)</button>
+          <button id="btn-run-eval" class="btn-secondary btn-run-eval">📊 Run 6-Case Parser Benchmark</button>
+          <button id="btn-memory-view" class="btn-secondary btn-memory-view">📋 Inspect Cancellation Records (<span id="memory-count">0</span>)</button>
         </div>
       </div>
 
@@ -257,8 +257,8 @@
 
         <div class="modal-footer">
           <button class="btn-primary" id="btn-copy-notice">📋 Copy Draft</button>
-          <button class="btn-secondary" id="btn-mark-submitted" style="background: rgba(59, 130, 246, 0.2); border-color: #3b82f6; color: #93c5fd;">✉️ Mark Request Sent</button>
-          <button class="btn-secondary" id="btn-download-packet" style="background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #a7f3d0;">📥 Download Evidence Packet (JSON)</button>
+          <button class="btn-secondary btn-mark-sent" id="btn-mark-submitted">✉️ Mark Request Sent</button>
+          <button class="btn-secondary btn-download-packet" id="btn-download-packet">📥 Download Evidence Packet (JSON)</button>
           <button class="btn-secondary" id="btn-modal-dismiss">Done</button>
         </div>
       </div>
@@ -272,7 +272,7 @@
             <h3>⚡ Session Cancellation Lifecycle Store</h3>
             <p class="modal-subtitle">
               In-process session state tracking (Draft -> Submitted -> Confirmed) 
-              <span class="badge" style="background: rgba(99, 102, 241, 0.2); border: 1px solid #6366f1; color: #a5b4fc; font-family: monospace; font-size: 0.75rem;" id="modal-session-id">Session: loading...</span>
+              <span class="badge badge-session-id" id="modal-session-id">Session: loading...</span>
             </p>
           </div>
           <button class="modal-close" id="btn-memory-close">&times;</button>
@@ -325,6 +325,6 @@
     </div>
   </footer>
 
-  <script src="/static/app.js?v=2.1"></script>
+  <script src="/static/app.js?v=2.2"></script>
 </body>
 </html>

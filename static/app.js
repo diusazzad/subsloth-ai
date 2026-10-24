@@ -76,12 +76,12 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       localStorage.setItem("subsloth_theme", theme);
     } catch (e) {}
-    if (theme === "dark") {
-      if (themeIcon) themeIcon.textContent = "☀️";
-      if (themeLabel) themeLabel.textContent = "Light Mode";
-    } else {
-      if (themeIcon) themeIcon.textContent = "🌙";
-      if (themeLabel) themeLabel.textContent = "Dark Mode";
+    const isDark = theme === "dark";
+    if (themeIcon) themeIcon.textContent = isDark ? "☀️" : "🌙";
+    if (themeLabel) themeLabel.textContent = isDark ? "Light Mode" : "Dark Mode";
+    if (themeToggleBtn) {
+      themeToggleBtn.setAttribute("aria-label", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
+      themeToggleBtn.setAttribute("title", isDark ? "Switch to Light Mode" : "Switch to Dark Mode");
     }
   }
 
