@@ -13,7 +13,7 @@ from typing import Dict, Any, List, Optional
 from datetime import datetime, timezone
 
 
-BACKBOARD_API_KEY = os.environ.get("BACKBOARD_API_KEY", "espr_awxGf6ESVaDYvCgEG5JnSjgVVRxT9iXrjYkuiq2DQPk")
+BACKBOARD_API_KEY = os.environ.get("BACKBOARD_API_KEY", "")
 BACKBOARD_BASE_URL = os.environ.get("BACKBOARD_BASE_URL", "https://api.backboard.io/v1")
 GEMMA_MODEL = os.environ.get("GEMMA_MODEL", "google/gemma-2-9b-it")
 
