@@ -1,7 +1,7 @@
 /**
  * SubSloth AI - Frontend Client Logic
  * Powers zero-click benchmarks, real-time 3-layer execution trace,
- * Backboard memory inspection, and 3-tier legal document copy.
+ * session-scoped cancellation tracking, and 3-tier dispute document drafting.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -34,6 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const noticeContent = document.getElementById("notice-content");
   const tierExplanation = document.getElementById("tier-explanation");
   const btnCopyNotice = document.getElementById("btn-copy-notice");
+  const btnMarkSubmitted = document.getElementById("btn-mark-submitted");
   const btnDownloadPacket = document.getElementById("btn-download-packet");
   const tabButtons = document.querySelectorAll(".modal-tabs .tab-btn");
 
@@ -136,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
       addTraceStep(1, `Layer 1: Deterministic Engine: Parsed ${data.total_items} items. Flagged ${data.dark_patterns_count} dark patterns.`, "trace-success");
       
       // Step 2 Memory Trace
-      addTraceStep(2, `Layer 2: Backboard Memory Session: Cross-referenced active cancellations & zombie checks.`, "trace-success");
+      addTraceStep(2, `Layer 2: Session Cancellation Store: Cross-referenced active cancellation status & rebill checks.`, "trace-success");
 
       // Check for Zombie alerts
       const hasZombie = data.subscriptions.some((s) => s.zombie_recharge_alert);
@@ -247,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
     escalationModal.classList.remove("hidden");
     modalMerchantTitle.textContent = `${sub.merchant} — 3-Tier Escalation`;
     modalLegalBasis.textContent = `Citing ${sub.ftc_clause_id} (${sub.ftc_title})`;
-    noticeContent.textContent = "Synthesizing legally grounded notice via Google Gemma 2 & Backboard Memory...";
+    noticeContent.textContent = "Synthesizing customized draft via Google Gemma 2 with statutory guardrails...";
 
     try {
       const resp = await fetch("/api/escalate", {
@@ -299,13 +300,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!currentActiveEscalation) return;
 
     if (currentTier === "tier_1") {
-      tierExplanation.innerHTML = `<strong>Tier 1: Diplomatic Request</strong> — Polite, 1-click customer service cancellation. Gives merchant 24-48 hours to confirm before legal escalation.`;
+      tierExplanation.innerHTML = `<strong>Tier 1: Diplomatic Request</strong> — Direct customer service cancellation draft with explicit account reference.`;
       noticeContent.textContent = currentActiveEscalation.tiers.tier_1_diplomatic;
     } else if (currentTier === "tier_2") {
-      tierExplanation.innerHTML = `<strong>Tier 2: FTC Legal Notice</strong> — Formal regulatory cease-and-desist citing <strong>16 CFR Part 425 § 425.6 (Click-to-Cancel)</strong>. Mentions civil penalties up to $50,120.`;
+      tierExplanation.innerHTML = `<strong>Tier 2: Formal Regulatory Notice</strong> — Formal cancellation demand citing <strong>ROSCA (15 U.S.C. § 8403)</strong> and FTC Negative Option principles.`;
       noticeContent.textContent = currentActiveEscalation.tiers.tier_2_ftc_legal;
     } else {
-      tierExplanation.innerHTML = `<strong>Tier 3: Bank Chargeback Affidavit</strong> — Dispute document for Visa/Mastercard/Bank under <strong>12 CFR § 1005.10 (EFTA Reg E)</strong> for immediate reversal of unauthorized debits.`;
+      tierExplanation.innerHTML = `<strong>Tier 3: Bank Stop-Payment Dispute Draft</strong> — Cardholder statement for financial institution dispute under <strong>CFPB Regulation E (12 CFR § 1005.10)</strong>.`;
       noticeContent.textContent = currentActiveEscalation.tiers.tier_3_chargeback;
     }
   }
@@ -315,37 +316,63 @@ document.addEventListener("DOMContentLoaded", () => {
     const text = noticeContent.textContent;
     navigator.clipboard.writeText(text).then(() => {
       const originalText = btnCopyNotice.textContent;
-      btnCopyNotice.textContent = "✓ Copied to Clipboard!";
+      btnCopyNotice.textContent = "✓ Copied Draft!";
       setTimeout(() => {
         btnCopyNotice.textContent = originalText;
       }, 2000);
     });
   });
 
+  // Mark Request Sent button
+  if (btnMarkSubmitted) {
+    btnMarkSubmitted.addEventListener("click", async () => {
+      if (!currentActiveEscalation) return;
+      try {
+        const resp = await fetch("/api/cancellations/mark-submitted", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ merchant: currentActiveEscalation.merchant })
+        });
+        if (resp.ok) {
+          btnMarkSubmitted.textContent = "✓ Marked Request Sent!";
+          setTimeout(() => {
+            btnMarkSubmitted.textContent = "✉️ Mark Request Sent";
+          }, 2500);
+          updateMemoryCount();
+        }
+      } catch (e) {
+        console.warn("Failed to mark submitted:", e);
+      }
+    });
+  }
+
   // Download Evidence Dispute Packet button
   btnDownloadPacket.addEventListener("click", () => {
     if (!currentActiveEscalation) return;
     const packet = {
-      title: "SubSloth AI — Official FTC Click-to-Cancel Evidence Packet",
+      title: "SubSloth AI — Cancellation Draft & Regulatory Dispute Evidence Packet",
       generated_at: new Date().toISOString(),
       merchant: currentActiveEscalation.merchant,
       amount: currentActiveEscalation.amount,
-      statutory_authority: [
-        "16 CFR Part 425 § 425.6 (Click-to-Cancel Rule)",
-        "15 U.S.C. § 45 (FTC Act Section 5 Unfair Trade Practices)",
-        "12 CFR § 1005.10 (Electronic Fund Transfer Act Regulation E)"
+      statutory_reference_standards: [
+        "Restore Online Shoppers' Confidence Act (ROSCA, 15 U.S.C. § 8403)",
+        "Section 5 of the FTC Act (15 U.S.C. § 45)",
+        "FTC Negative Option Framework (16 CFR Part 425)",
+        "Electronic Fund Transfer Act / CFPB Regulation E (12 CFR § 1005.10)"
       ],
+      synthesis_engine: currentActiveEscalation.synthesis_engine,
+      gemma_contribution: currentActiveEscalation.gemma_contribution,
       escalation_record: currentActiveEscalation,
       active_document_tier: currentTier,
       active_document_text: noticeContent.textContent,
-      guardrail_compliance: "Verified 100% Deterministic — 0% Hallucinated Citations"
+      guardrail_compliance: "Deterministic Citation & Calculation Guardrail — Model output bounded as user-reviewed draft text"
     };
 
     const blob = new Blob([JSON.stringify(packet, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `FTC_Dispute_Packet_${currentActiveEscalation.merchant.replace(/[^a-zA-Z0-9]/g, "_")}.json`;
+    a.download = `SubSloth_Dispute_Packet_${currentActiveEscalation.merchant.replace(/[^a-zA-Z0-9]/g, "_")}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -389,15 +416,27 @@ document.addEventListener("DOMContentLoaded", () => {
     records.forEach((rec) => {
       const item = document.createElement("div");
       item.className = "memory-item";
+      
+      let statusBadge = "badge-saas";
+      let statusLabel = "📝 Draft Prepared";
+      if (rec.status === "REQUEST_SUBMITTED") {
+        statusBadge = "badge-gym";
+        statusLabel = "✉️ Request Sent";
+      } else if (rec.status === "CANCELLATION_CONFIRMED") {
+        statusBadge = "badge-guardrail";
+        statusLabel = "✅ Confirmed Cancelled";
+      }
+
+      const timeLabel = rec.submitted_at ? `Sent: ${rec.submitted_at}` : `Drafted: ${rec.drafted_at}`;
+
       item.innerHTML = `
         <div>
           <div class="memory-merchant">${escapeHtml(rec.merchant)} — $${rec.amount.toFixed(2)}</div>
-          <div class="memory-notice-id">Notice ID: ${rec.notice_id} | Cancelled: ${rec.cancelled_at}</div>
+          <div class="memory-notice-id">Notice ID: ${rec.notice_id} | ${timeLabel}</div>
         </div>
         <div>
-          <span class="badge ${rec.zombie_alerts_count > 0 ? 'badge-ftc' : 'badge-backboard'}">
-            ${rec.zombie_alerts_count > 0 ? `⚠️ ${rec.zombie_alerts_count} Zombie Intercepts` : 'Active Protection'}
-          </span>
+          <span class="badge ${statusBadge}">${statusLabel}</span>
+          ${rec.zombie_alerts_count > 0 ? `<span class="badge badge-zombie">⚠️ ${rec.zombie_alerts_count} Outflow Alert</span>` : ''}
         </div>
       `;
       memoryRecordsList.appendChild(item);
@@ -433,13 +472,14 @@ document.addEventListener("DOMContentLoaded", () => {
       if (resp.ok) {
         const data = await resp.json();
         alert(
-          `🧟 ZOMBIE REBILL INTERCEPTED BY BACKBOARD MEMORY!\n\n` +
+          `🧟 RECURRING BILLING DETECTED POST-CANCELLATION!\n\n` +
           `Merchant: ${data.merchant}\n` +
-          `Unauthorized Debit: $${data.unauthorized_amount}\n` +
-          `Prior Cancellation Notice: ${data.cancellation_notice_id}\n\n` +
+          `Recurring Charge: $${data.unauthorized_amount}\n` +
+          `Prior Cancellation Notice Ref: ${data.cancellation_notice_id}\n` +
+          `Status: ${data.status}\n\n` +
           `Recommended Action: ${data.recommended_escalation}\n` +
-          `Legal Mandate: ${data.legal_basis}\n\n` +
-          `Backboard Memory proves to the bank that this debit was formally revoked!`
+          `Statutory Basis: ${data.legal_basis}\n\n` +
+          `The Session Cancellation Store documents that cancellation was previously submitted, providing factual support for cardholder dispute review under Regulation E (12 CFR § 1005.10).`
         );
         await refreshMemoryUI();
       }

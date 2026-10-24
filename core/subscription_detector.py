@@ -96,14 +96,14 @@ def classify_dark_pattern(line_text: str, merchant: str, amount: float) -> Tuple
                 True,
                 "GYM_TRAP",
                 FTC_POLICY_CLAUSES["FTC_CLICK_TO_CANCEL"],
-                "Burdensome cancellation requirement (in-person or certified mail) violates FTC Click-to-Cancel rules."
+                "Burdensome cancellation requirement (in-person or certified mail) flagged under ROSCA / FTC simple stopping mechanism standards."
             )
     if is_gym and amount > 0:
         return (
             True,
             "GYM_TRAP",
             FTC_POLICY_CLAUSES["FTC_CLICK_TO_CANCEL"],
-            "Gym membership with documented retention barriers. Subject to 16 CFR Part 425 § 425.6 simple cancellation mandate."
+            "Gym membership with documented retention barriers. Flagged under ROSCA (15 U.S.C. § 8403) simple cancellation standards."
         )
 
     # 2. Test for Sneaky SaaS Trial Conversion
@@ -113,7 +113,7 @@ def classify_dark_pattern(line_text: str, merchant: str, amount: float) -> Tuple
                 True,
                 "SNEAKY_SAAS_TRIAL",
                 FTC_POLICY_CLAUSES["FTC_NEGATIVE_OPTION_DISCLOSURE"],
-                "Stealth trial-to-paid auto-conversion without affirmative disclosure violates 16 CFR Part 425 § 425.4."
+                "Trial-to-paid auto-conversion scenario flagged under FTC Negative Option pre-consent disclosure standards."
             )
 
     # 3. Test for Ghost Micro-Fee

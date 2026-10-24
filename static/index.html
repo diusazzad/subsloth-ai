@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubSloth AI 🦥 — The Zombie Subscription & Dark Pattern Legal Canceller</title>
-  <meta name="description" content="Automated dark pattern detection and FTC Click-to-Cancel enforcement powered by Google Gemma 2, Backboard Memory, and Render.">
+  <meta name="description" content="Automated subscription dark-pattern audit, deterministic statutory grounding, and Google Gemma 2 cancellation drafting deployed on Render.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -28,7 +28,7 @@
         <span class="badge badge-ftc">⚖️ FTC Negative Option Framework</span>
         <span class="badge badge-render">🚀 Render Live</span>
         <span class="badge badge-gemma">🧠 Google Gemma 2</span>
-        <span class="badge badge-backboard">⚡ Backboard Memory</span>
+        <span class="badge badge-backboard">⚡ Cancellation Lifecycle</span>
         <span class="badge badge-guardrail" style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7;">🛡️ Deterministic Citation Guardrail</span>
         <a href="/docs" target="_blank" class="badge badge-docs">📑 OpenAPI Docs</a>
       </div>
@@ -96,7 +96,7 @@
           <h3>⚡ Zero-Click Judge Benchmarks</h3>
           <p>Click any preset to instantly test our deterministic engine against real-world dark patterns:</p>
         </div>
-        <button id="btn-memory-view" class="btn-secondary">🧠 Inspect Backboard Memory (<span id="memory-count">0</span>)</button>
+        <button id="btn-memory-view" class="btn-secondary">📋 Inspect Cancellation Records (<span id="memory-count">0</span>)</button>
       </div>
 
       <div class="benchmark-grid" id="benchmark-buttons-container">
@@ -184,8 +184,8 @@
       <div class="modal-card">
         <div class="modal-header">
           <div>
-            <h3 id="modal-merchant-title">Planet Fitness Escalation Notice</h3>
-            <p class="modal-subtitle" id="modal-legal-basis">Citing 16 CFR Part 425 § 425.6</p>
+            <h3 id="modal-merchant-title">Subscription Escalation Notice</h3>
+            <p class="modal-subtitle" id="modal-legal-basis">Citing ROSCA & FTC Negative Option Standards</p>
           </div>
           <button class="modal-close" id="btn-modal-close">&times;</button>
         </div>
@@ -193,41 +193,42 @@
         <!-- 3-Tier Tabs -->
         <div class="modal-tabs">
           <button class="tab-btn active" data-tier="tier_1">✉️ Tier 1: Diplomatic Request</button>
-          <button class="tab-btn" data-tier="tier_2">⚖️ Tier 2: FTC Legal Notice</button>
-          <button class="tab-btn" data-tier="tier_3">🏦 Tier 3: Bank Chargeback Affidavit</button>
+          <button class="tab-btn" data-tier="tier_2">⚖️ Tier 2: Formal Regulatory Notice</button>
+          <button class="tab-btn" data-tier="tier_3">🏦 Tier 3: Bank Stop-Payment Dispute Draft</button>
         </div>
 
         <div class="modal-body">
           <div class="tier-explanation" id="tier-explanation">
-            <strong>Diplomatic Request:</strong> Gentle 1-click customer service cancellation with explicit account reference.
+            <strong>Diplomatic Request:</strong> Direct customer service cancellation draft with explicit account reference.
           </div>
           <pre class="notice-pre" id="notice-content">Loading notice draft...</pre>
         </div>
 
         <div class="modal-footer">
-          <button class="btn-primary" id="btn-copy-notice">📋 Copy Document</button>
+          <button class="btn-primary" id="btn-copy-notice">📋 Copy Draft</button>
+          <button class="btn-secondary" id="btn-mark-submitted" style="background: rgba(59, 130, 246, 0.2); border-color: #3b82f6; color: #93c5fd;">✉️ Mark Request Sent</button>
           <button class="btn-secondary" id="btn-download-packet" style="background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #a7f3d0;">📥 Download Evidence Packet (JSON)</button>
           <button class="btn-secondary" id="btn-modal-dismiss">Done</button>
         </div>
       </div>
     </div>
 
-    <!-- Backboard Memory Inspector Modal -->
+    <!-- Session Memory Inspector Modal -->
     <div class="modal-overlay hidden" id="memory-modal">
       <div class="modal-card">
         <div class="modal-header">
           <div>
-            <h3>⚡ Backboard Memory Store</h3>
-            <p class="modal-subtitle">Persistent cancellation state preventing merchant zombie rebills</p>
+            <h3>⚡ Session Cancellation Lifecycle Store</h3>
+            <p class="modal-subtitle">In-process session state tracking (Draft -> Submitted -> Confirmed)</p>
           </div>
           <button class="modal-close" id="btn-memory-close">&times;</button>
         </div>
         <div class="modal-body">
           <p class="memory-info-box">
-            Backboard Memory records every cancelled merchant and notice ID. When a future statement audit detects recurring debits from a cancelled merchant, it immediately triggers an unauthorized <strong>EFTA Reg E Zombie Alert</strong>.
+            Tracks cancellation lifecycle states per session. Once a cancellation is marked submitted or confirmed, subsequent statement audits flag unexpected recurring charges from that merchant for stop-payment dispute review under Regulation E standards.
           </p>
           <div class="memory-records-list" id="memory-records-list">
-            <div class="empty-memory">No active cancellations saved in memory yet. Run an audit and click 'Escalate' to track one!</div>
+            <div class="empty-memory">No active cancellations tracked in this session yet. Run an audit and click 'Generate 3-Tier Notice' to track one!</div>
           </div>
         </div>
         <div class="modal-footer">

@@ -1,20 +1,21 @@
 """
-SubSloth AI - Legal Policy Knowledge Base
-Grounding consumer subscription cancellation in Federal Trade Commission (FTC) mandates,
-Electronic Fund Transfer Act (EFTA), and Restore Online Shoppers' Confidence Act (ROSCA).
+SubSloth AI - Legal Regulatory Reference Framework
+Grounding consumer subscription cancellation in active Federal Trade Commission (FTC) standards,
+Restore Online Shoppers' Confidence Act (ROSCA, 15 U.S.C. § 8403), Section 5 of the FTC Act
+(15 U.S.C. § 45), and Electronic Fund Transfer Act / CFPB Regulation E (12 CFR § 1005.10).
 """
 
 from typing import Dict, Any
 
 FTC_POLICY_CLAUSES: Dict[str, Dict[str, Any]] = {
     "FTC_CLICK_TO_CANCEL": {
-        "clause_id": "16 CFR Part 425 § 425.6",
-        "title": "Simple Cancellation Mechanism Mandate (Click-to-Cancel)",
+        "clause_id": "15 U.S.C. § 8403 / 16 CFR Part 425",
+        "title": "Simple Cancellation Mechanism Requirement (ROSCA & FTC Negative Option Framework)",
         "authority": "Federal Trade Commission (FTC)",
-        "effective_date": "October 2026",
-        "statutory_violation": "Failure to provide a cancellation method as easy as the enrollment method",
-        "penalty": "Civil penalties up to $50,120 per violation under 15 U.S.C. § 45(m)(1)(A)",
-        "summary": "Sellers must provide a cancellation mechanism at least as easy to use as initiation. Forcing consumers who enrolled online to call support or submit physical mail violates federal regulations.",
+        "effective_date": "Active Federal Law",
+        "statutory_violation": "Imposing unreasonable cancellation friction or failing to provide simple stopping mechanisms for recurring billing",
+        "penalty": "FTC enforcement action, consumer restitution, and injunctive relief under 15 U.S.C. § 45",
+        "summary": "Under ROSCA and FTC Negative Option principles, merchants utilizing recurring billing must provide simple, accessible mechanisms for consumers to stop recurring charges without artificial barriers or deceptive retention mazes.",
         "dark_pattern_triggers": [
             "phone call required",
             "call customer support",
@@ -28,13 +29,13 @@ FTC_POLICY_CLAUSES: Dict[str, Dict[str, Any]] = {
         ]
     },
     "FTC_NEGATIVE_OPTION_DISCLOSURE": {
-        "clause_id": "16 CFR Part 425 § 425.4",
-        "title": "Clear & Conspicuous Negative Option Disclosure",
+        "clause_id": "16 CFR Part 425 / 15 U.S.C. § 45",
+        "title": "Pre-Consent Disclosure Requirement (FTC Negative Option Framework)",
         "authority": "Federal Trade Commission (FTC)",
-        "effective_date": "October 2026",
-        "statutory_violation": "Stealth conversion from free trial to paid recurring billing without explicit affirmative consent",
-        "penalty": "Civil penalties up to $50,120 per violation + consumer restitution",
-        "summary": "Merchants must disclose all material terms prior to obtaining billing details and receive unambiguous affirmative consent before auto-converting trials into recurring charges.",
+        "effective_date": "Active Federal Law",
+        "statutory_violation": "Auto-converting trial or promotional billing to recurring charges without clear pre-consent disclosure",
+        "penalty": "Consumer restitution and regulatory enforcement under Section 5 of the FTC Act",
+        "summary": "Merchants must clearly and conspicuously disclose material terms prior to obtaining billing information and obtain express informed consent before converting trials into recurring charges.",
         "dark_pattern_triggers": [
             "free trial auto-renew",
             "trial ended",
@@ -50,11 +51,11 @@ FTC_POLICY_CLAUSES: Dict[str, Dict[str, Any]] = {
     "EFTA_REG_E_CHARGEBACK": {
         "clause_id": "12 CFR § 1005.10(b) (Regulation E)",
         "title": "Revocation of Preauthorized Electronic Fund Transfers",
-        "authority": "Consumer Financial Protection Bureau (CFPB) & Federal Reserve",
+        "authority": "Consumer Financial Protection Bureau (CFPB)",
         "effective_date": "Codified Regulation",
-        "statutory_violation": "Debiting consumer accounts after notice of revocation",
-        "penalty": "Mandatory financial institution chargeback reversal and merchant debit blocking",
-        "summary": "Consumers may revoke authorization for recurring automated debits by giving oral or written notice at any time up to three business days before the scheduled transfer. Refusal mandates immediate bank chargeback.",
+        "statutory_violation": "Debiting consumer accounts after written notice of authorization revocation",
+        "penalty": "Bank dispute investigation, stop-payment rights, and unauthorized transfer dispute procedures",
+        "summary": "Consumers may revoke authorization for recurring automated debits by giving notice to the merchant or financial institution, providing grounds for bank dispute investigation if recurring debits continue.",
         "dark_pattern_triggers": [
             "stop payment request",
             "unauthorized debit",
@@ -70,8 +71,8 @@ FTC_POLICY_CLAUSES: Dict[str, Dict[str, Any]] = {
         "title": "Restore Online Shoppers' Confidence Act (ROSCA)",
         "authority": "Federal Trade Commission (FTC)",
         "effective_date": "Federal Statute",
-        "statutory_violation": "Imposing undisclosed recurring maintenance or membership addon fees",
-        "penalty": "FTC enforcement action and disgorgement of illicit fees",
+        "statutory_violation": "Charging recurring fees without clear disclosure of all recurring material terms",
+        "penalty": "FTC civil enforcement and restitution under Section 5",
         "summary": "Prohibits charging consumers for goods or services sold on the internet through negative option marketing without clear disclosures and simple stopping mechanisms.",
         "dark_pattern_triggers": [
             "annual fee",
@@ -96,8 +97,9 @@ def get_clause_by_trigger(trigger_phrase: str) -> Dict[str, Any]:
 
 
 def format_legal_citation(clause: Dict[str, Any]) -> str:
-    """Formats a formal legal citation block for dispute notices."""
+    """Formats a formal regulatory citation block for dispute drafts."""
     return (
-        f"Pursuant to {clause['title']} ({clause['clause_id']}), enforced by the {clause['authority']}. "
-        f"Statutory provision: {clause['summary']} (Civil penalty: {clause['penalty']})."
+        f"Pursuant to {clause['title']} ({clause['clause_id']}), overseen by the {clause['authority']}. "
+        f"Regulatory standard: {clause['summary']} (Remedy framework: {clause['penalty']})."
     )
+
