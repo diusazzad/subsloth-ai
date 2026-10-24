@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,9 +8,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/style.css?v=2.1">
+  <script>
+    // Default to 'light' (White mode)
+    (function() {
+      try {
+        const savedTheme = localStorage.getItem('subsloth_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+      } catch (e) {}
+    })();
+  </script>
 </head>
-<body class="sloth-dark">
+<body class="sloth-theme">
   <div class="background-glow top-left"></div>
   <div class="background-glow bottom-right"></div>
 
@@ -29,8 +38,13 @@
         <span class="badge badge-render">🚀 Render Live</span>
         <span class="badge badge-gemma">🧠 Google Gemma 2</span>
         <span class="badge badge-backboard">⚡ Cancellation Lifecycle</span>
-        <span class="badge badge-guardrail" style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7;">🛡️ Deterministic Citation Guardrail</span>
+        <span class="badge badge-guardrail">🛡️ Deterministic Citation Guardrail</span>
         <a href="/docs" target="_blank" class="badge badge-docs">📑 OpenAPI Docs</a>
+        <!-- Theme Toggle Button: Light / Dark -->
+        <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Toggle light or dark theme" title="Switch Theme">
+          <span class="theme-icon" id="theme-icon">🌙</span>
+          <span class="theme-label" id="theme-label">Dark Mode</span>
+        </button>
       </div>
     </div>
   </header>
@@ -51,43 +65,36 @@
     </section>
 
     <!-- How to Use — 3 Step Onboarding -->
-    <section class="how-to-section" style="
-      max-width: 860px;
-      margin: 0 auto 2rem auto;
-      padding: 1.5rem 2rem;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 1rem;
-    ">
-      <h3 style="text-align:center; font-size:1.1rem; color:#a1a1aa; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:1.5rem; font-weight:600;">
+    <section class="how-to-section">
+      <h3 class="how-to-title">
         🦥 How to Use SubSloth — 3 Simple Steps
       </h3>
-      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1.5rem;">
+      <div class="how-to-grid">
 
-        <div style="text-align:center; padding:1.25rem; background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.2); border-radius:0.75rem;">
-          <div style="font-size:2rem; margin-bottom:0.5rem;">📋</div>
-          <div style="font-size:0.75rem; color:#6ee7b7; font-weight:700; letter-spacing:0.1em; margin-bottom:0.4rem;">STEP 1</div>
-          <div style="font-weight:700; margin-bottom:0.4rem; color:#f4f4f5;">Paste a Statement Line</div>
-          <div style="font-size:0.82rem; color:#a1a1aa; line-height:1.5;">Copy any transaction line from your online banking app or credit card SMS — like <code style="background:rgba(255,255,255,0.08);padding:0.1rem 0.3rem;border-radius:0.25rem;font-size:0.75rem;">Netflix $15.99</code> or <code style="background:rgba(255,255,255,0.08);padding:0.1rem 0.3rem;border-radius:0.25rem;font-size:0.75rem;">PLANET FITNESS $29.99/MO</code></div>
+        <div class="how-to-card card-step-1">
+          <div class="how-to-emoji">📋</div>
+          <div class="how-to-step-tag">STEP 1</div>
+          <div class="how-to-card-title">Paste a Statement Line</div>
+          <div class="how-to-card-desc">Copy any transaction line from your online banking app or credit card SMS — like <code>Netflix $15.99</code> or <code>PLANET FITNESS $29.99/MO</code></div>
         </div>
 
-        <div style="text-align:center; padding:1.25rem; background:rgba(139,92,246,0.07); border:1px solid rgba(139,92,246,0.2); border-radius:0.75rem;">
-          <div style="font-size:2rem; margin-bottom:0.5rem;">🦥</div>
-          <div style="font-size:0.75rem; color:#c4b5fd; font-weight:700; letter-spacing:0.1em; margin-bottom:0.4rem;">STEP 2</div>
-          <div style="font-weight:700; margin-bottom:0.4rem; color:#f4f4f5;">Hit "Run Sloth Audit"</div>
-          <div style="font-size:0.82rem; color:#a1a1aa; line-height:1.5;">SubSloth detects zombie subscriptions, dark patterns (hidden fees, in-person-only cancellation), and calculates your annual cost leak.</div>
+        <div class="how-to-card card-step-2">
+          <div class="how-to-emoji">🦥</div>
+          <div class="how-to-step-tag">STEP 2</div>
+          <div class="how-to-card-title">Hit "Run Sloth Audit"</div>
+          <div class="how-to-card-desc">SubSloth detects zombie subscriptions, dark patterns (hidden fees, in-person-only cancellation), and calculates your annual cost leak.</div>
         </div>
 
-        <div style="text-align:center; padding:1.25rem; background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.2); border-radius:0.75rem;">
-          <div style="font-size:2rem; margin-bottom:0.5rem;">✉️</div>
-          <div style="font-size:0.75rem; color:#fcd34d; font-weight:700; letter-spacing:0.1em; margin-bottom:0.4rem;">STEP 3</div>
-          <div style="font-weight:700; margin-bottom:0.4rem; color:#f4f4f5;">Get Your Cancellation Draft</div>
-          <div style="font-size:0.82rem; color:#a1a1aa; line-height:1.5;">Google Gemma 2 generates a personalized cancellation letter citing FTC Click-to-Cancel rules. Copy it and send — done. 🦥</div>
+        <div class="how-to-card card-step-3">
+          <div class="how-to-emoji">✉️</div>
+          <div class="how-to-step-tag">STEP 3</div>
+          <div class="how-to-card-title">Get Your Cancellation Draft</div>
+          <div class="how-to-card-desc">Google Gemma 2 generates a personalized cancellation letter citing FTC Click-to-Cancel rules. Copy it and send — done. 🦥</div>
         </div>
 
       </div>
-      <p style="text-align:center; margin-top:1.2rem; font-size:0.82rem; color:#71717a;">
-        👇 Or just click one of the <strong style="color:#a78bfa;">preset examples below</strong> to see it work instantly — no bank statement needed.
+      <p class="how-to-hint">
+        👇 Or just click one of the <strong>preset examples below</strong> to see it work instantly — no bank statement needed.
       </p>
     </section>
 
@@ -318,6 +325,6 @@
     </div>
   </footer>
 
-  <script src="/static/app.js"></script>
+  <script src="/static/app.js?v=2.1"></script>
 </body>
 </html>

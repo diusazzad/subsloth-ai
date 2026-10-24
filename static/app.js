@@ -66,6 +66,37 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnEvalDismiss = document.getElementById("btn-eval-dismiss");
   const evalModalBody = document.getElementById("eval-modal-body");
 
+  // Theme Toggle Elements & Logic (Default: White / Light mode)
+  const themeToggleBtn = document.getElementById("theme-toggle-btn");
+  const themeIcon = document.getElementById("theme-icon");
+  const themeLabel = document.getElementById("theme-label");
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    try {
+      localStorage.setItem("subsloth_theme", theme);
+    } catch (e) {}
+    if (theme === "dark") {
+      if (themeIcon) themeIcon.textContent = "☀️";
+      if (themeLabel) themeLabel.textContent = "Light Mode";
+    } else {
+      if (themeIcon) themeIcon.textContent = "🌙";
+      if (themeLabel) themeLabel.textContent = "Dark Mode";
+    }
+  }
+
+  // Sync button state on initial load
+  const initialTheme = document.documentElement.getAttribute("data-theme") || "light";
+  applyTheme(initialTheme);
+
+  if (themeToggleBtn) {
+    themeToggleBtn.addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme") || "light";
+      const nextTheme = current === "dark" ? "light" : "dark";
+      applyTheme(nextTheme);
+    });
+  }
+
   // State
   let currentActiveEscalation = null;
   let currentTier = "tier_1";
@@ -582,8 +613,8 @@ document.addEventListener("DOMContentLoaded", () => {
           const gChecks = evalData.guardrail_verification || { checks_passed: 4, checks_evaluated: 4, all_passed: true };
 
           evalModalBody.innerHTML = `
-            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid #10b981; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
-              <h4 style="margin: 0 0 0.5rem 0; color: #a7f3d0;">✓ ${escapeHtml(title)}</h4>
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid var(--color-green); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+              <h4 style="margin: 0 0 0.5rem 0; color: var(--color-green);">✓ ${escapeHtml(title)}</h4>
               <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">
                 ${escapeHtml(scope)}
               </p>
@@ -591,33 +622,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
             <!-- Confusion Matrix & Extraction -->
             <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1rem;">
-              <div style="background: rgba(255, 255, 255, 0.04); border-radius: 6px; padding: 0.6rem; text-align: center;">
+              <div style="background: var(--clause-bg); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.6rem; text-align: center;">
                 <div style="font-size: 0.7rem; color: var(--text-muted);">True Positives</div>
-                <div style="font-size: 1.4rem; font-weight: 700; color: #34d399;">${evalData.true_positives}</div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: #059669;">${evalData.true_positives}</div>
               </div>
-              <div style="background: rgba(255, 255, 255, 0.04); border-radius: 6px; padding: 0.6rem; text-align: center;">
+              <div style="background: var(--clause-bg); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.6rem; text-align: center;">
                 <div style="font-size: 0.7rem; color: var(--text-muted);">True Negatives</div>
-                <div style="font-size: 1.4rem; font-weight: 700; color: #34d399;">${evalData.true_negatives}</div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: #059669;">${evalData.true_negatives}</div>
               </div>
-              <div style="background: rgba(255, 255, 255, 0.04); border-radius: 6px; padding: 0.6rem; text-align: center;">
+              <div style="background: var(--clause-bg); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.6rem; text-align: center;">
                 <div style="font-size: 0.7rem; color: var(--text-muted);">False Positives</div>
-                <div style="font-size: 1.4rem; font-weight: 700; color: #94a3b8;">${evalData.false_positives}</div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: var(--text-dim);">${evalData.false_positives}</div>
               </div>
-              <div style="background: rgba(255, 255, 255, 0.04); border-radius: 6px; padding: 0.6rem; text-align: center;">
+              <div style="background: var(--clause-bg); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.6rem; text-align: center;">
                 <div style="font-size: 0.7rem; color: var(--text-muted);">False Negatives</div>
-                <div style="font-size: 1.4rem; font-weight: 700; color: #94a3b8;">${evalData.false_negatives}</div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: var(--text-dim);">${evalData.false_negatives}</div>
               </div>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1rem;">
-              <div style="background: rgba(255, 255, 255, 0.04); border-radius: 6px; padding: 0.75rem;">
+              <div style="background: var(--clause-bg); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.75rem;">
                 <div style="font-size: 0.75rem; color: var(--text-muted);">Extraction Accuracy (Amount, Cadence & Merchant)</div>
-                <div style="font-size: 1.4rem; font-weight: 700; color: #60a5fa;">${evalData.extraction_accuracy_pct}%</div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: var(--color-cyan);">${evalData.extraction_accuracy_pct}%</div>
                 <div style="font-size: 0.7rem; color: var(--text-muted);">Parse failures: ${evalData.parse_failures || 0} | Merchant mismatches: ${evalData.merchant_mismatches || 0}</div>
               </div>
-              <div style="background: rgba(255, 255, 255, 0.04); border-radius: 6px; padding: 0.75rem;">
+              <div style="background: var(--clause-bg); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.75rem;">
                 <div style="font-size: 0.75rem; color: var(--text-muted);">Observed Parser Latency (CPU Regex)</div>
-                <div style="font-size: 1.4rem; font-weight: 700; color: #fbbf24;">${evalData.avg_item_latency_ms} ms/item</div>
+                <div style="font-size: 1.4rem; font-weight: 700; color: var(--color-amber);">${evalData.avg_item_latency_ms} ms/item</div>
                 <div style="font-size: 0.7rem; color: var(--text-muted);">Suite runtime: ${evalData.total_suite_runtime_ms} ms</div>
               </div>
             </div>
@@ -625,7 +656,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <!-- Guardrail Verification -->
             <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 6px; padding: 0.75rem; margin-bottom: 1rem; font-size: 0.8rem;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-                <strong style="color: #a5b4fc;">🛡️ Deterministic Guardrail Verification</strong>
+                <strong style="color: var(--color-purple);">🛡️ Deterministic Guardrail Verification</strong>
                 <span class="badge badge-guardrail">${gChecks.checks_passed}/${gChecks.checks_evaluated} checks passed</span>
               </div>
               <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted);">
@@ -634,14 +665,14 @@ document.addEventListener("DOMContentLoaded", () => {
             </div>
 
             <!-- Scope Disclaimer -->
-            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 0.75rem; font-size: 0.75rem; margin-bottom: 1rem;">
-              <strong style="color: #cbd5e1;">ℹ️ Latency & Benchmark Scope:</strong>
+            <div style="background: var(--clause-bg); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.75rem; font-size: 0.75rem; margin-bottom: 1rem;">
+              <strong style="color: var(--text-main);">ℹ️ Latency & Benchmark Scope:</strong>
               <p style="margin: 0.25rem 0 0 0; color: var(--text-muted);">
                 ${escapeHtml(latencyScope)} This snapshot does not measure remote Gemma LLM generation, Render cold start, or complete end-to-end user workflows.
               </p>
             </div>
 
-            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 0.75rem; font-size: 0.75rem;">
+            <div style="background: var(--clause-bg); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 0.75rem; font-size: 0.75rem;">
               <strong>Referenced Statutory Standards:</strong>
               <ul style="margin: 0.35rem 0 0 1rem; padding: 0; color: var(--text-muted);">
                 ${evalData.statutory_coverage.map(s => `<li>${escapeHtml(s)}</li>`).join('')}
