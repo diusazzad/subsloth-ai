@@ -187,6 +187,11 @@ document.addEventListener("DOMContentLoaded", () => {
       resultsSection.classList.remove("hidden");
       resultsSummaryBadge.textContent = `${data.total_items} Subscriptions Detected ($${data.total_annual_drain.toFixed(2)}/yr total)`;
 
+      // Smooth scroll to results so user immediately sees detected dark patterns and action buttons
+      setTimeout(() => {
+        resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
+
       // Refresh memory count
       updateMemoryCount();
 
