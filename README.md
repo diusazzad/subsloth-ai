@@ -7,7 +7,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com)
 [![Google Gemma 2](https://img.shields.io/badge/Model-Google%20Gemma%202-purple.svg)](https://ai.google.dev/gemma)
 [![Statutes](https://img.shields.io/badge/Statutes-ROSCA%20%2F%20EFTA-amber.svg)](https://www.ftc.gov)
-[![Pytest](https://img.shields.io/badge/Tests-23%2F23%20Passed-brightgreen.svg)](https://pytest.org)
+[![Pytest](https://img.shields.io/badge/Tests-28%2F28%20Passed-brightgreen.svg)](https://pytest.org)
 
 ---
 
@@ -15,9 +15,9 @@
 
 Consumers delay and procrastinate cancelling subscriptions because companies intentionally deploy **Dark Patterns** — multi-page retention funnels, forced customer support phone queues, and certified physical mail mandates. 
 
-Because people are naturally inclined to conserve energy (*channeling our inner sloth!*), users delay cancelling gym memberships, trial conversions, and software tools for months. An average consumer loses **$35 to $80 per month ($420 to $960/year)** simply out of friction-induced procrastination.
+Because people are naturally inclined to conserve energy (*channeling our inner sloth!*), users delay cancelling gym memberships, trial conversions, and software tools for months. According to consumer subscription market surveys (such as studies by West Monroe and financial institution analyses), forgotten or friction-heavy recurring subscriptions cost typical consumers between **$35 and $80 per month ($420 to $960/year)** simply out of friction-induced procrastination.
 
-When consumers try to cancel verbally or with emotional appeals (*"Please stop charging me, I can't afford this"*), retention desks stall. When consumers cite active statutory standards — specifically the **Restore Online Shoppers' Confidence Act (ROSCA, 15 U.S.C. § 8403)**, the **FTC Negative Option Framework (16 CFR Part 425)**, and **CFPB Regulation E (12 CFR § 1005.10)** — cancellation requests transition from emotional appeals into grounded, formal communications.
+When consumers try to cancel verbally or with emotional appeals (*"Please stop charging me, I can't afford this"*), retention desks stall. When consumers cite active statutory standards — specifically the **Restore Online Shoppers' Confidence Act (ROSCA, 15 U.S.C. § 8403)**, the **FTC Negative Option Framework (16 CFR Part 425 / FTC Act Section 5)**, and **CFPB Regulation E (12 CFR § 1005.10)** — cancellation requests transition from emotional appeals into grounded, formal communications.
 
 **SubSloth AI** is an open-source consumer tool that audits raw bank statements, credit card SMS logs, or transaction exports, flags recurring dark-pattern friction deterministically, and leverages **Google Gemma 2** to synthesize 3-tier user-reviewed cancellation letters and bank dispute drafts grounded in federal consumer protection standards.
 
@@ -47,9 +47,9 @@ flowchart TD
     A[Raw Bank Statement / SMS / CSV Input] --> B[Layer 1: Deterministic Detection Engine]
     B -->|Regex Heuristic Graphs| C{Dark Pattern Detected?}
     C -->|Gym In-Person Trap| D[Flag 15 U.S.C. § 8403 ROSCA Simple Mechanism]
-    C -->|Sneaky SaaS Trial Jump| E[Flag 16 CFR Part 425 Negative Option Disclosure]
+    C -->|Sneaky SaaS Trial Jump| E[Flag Section 5 / 16 CFR Part 425 Disclosure]
     C -->|Hidden Ghost Micro-Fee| F[Flag 15 U.S.C. § 8403 Undisclosed Fees]
-    C -->|Standard Subscription| G[Flag 12 CFR § 1005.10 EFTA Reg E]
+    C -->|Standard Subscription| G[Flag 12 CFR § 1005.10 Regulation E]
     D & E & F & G --> H[Layer 2: Session Lifecycle Store & Google Gemma 2]
     H -->|Check Prior Cancellations| I{Merchant Submitted or Confirmed?}
     I -->|Yes: Outflow Post-Cancellation| J[Flag Zombie Rebill for Tier 3 Dispute]
@@ -61,19 +61,19 @@ flowchart TD
 
 ### 1. Layer 1: Deterministic Detection Engine (Python)
 Before touching any LLM, incoming transaction text is audited against regex token graphs:
-* **GYM_TRAP:** Detects gym chains (*Planet Fitness, Equinox, Gold's Gym*) requiring in-person visits or certified mail.
-* **SNEAKY_SAAS_TRIAL:** Catches introductory rates and free trials converting to $79/mo recurring charges without affirmative consent.
-* **GHOST_MICRO_FEE:** Catches undisclosed streaming addons ($1.99–$9.99) attached via drip pricing.
+* **GYM_TRAP:** Detects gym chains (*Planet Fitness, Equinox, Gold's Gym*) requiring in-person visits or certified mail. Flagged under ROSCA (15 U.S.C. § 8403) simple stopping mechanism standards.
+* **SNEAKY_SAAS_TRIAL:** Catches introductory rates and free trials converting to $79/mo recurring charges without affirmative consent, flagged under FTC Act Section 5 pre-consent disclosure principles.
+* **GHOST_MICRO_FEE:** Catches undisclosed streaming addons ($1.99–$9.99) attached via drip pricing, flagged under ROSCA material disclosure rules.
 
 ### 2. Layer 2: Session Lifecycle State & Google Gemma 2 Drafting
-* **Session Lifecycle Store:** Tracks state per session (`DRAFT_GENERATED` -> `REQUEST_SUBMITTED` -> `CANCELLATION_CONFIRMED`). A draft alone does NOT flag unauthorized rebilling. Only once the user marks the notice sent or confirmed does a subsequent charge trigger an anti-zombie alert.
-* **Google Gemma 2:** Prompts Gemma 2 via completion endpoint to author custom natural-language narrative blocks (`[DIPLOMATIC_BODY]` and `[DISPUTE_NARRATIVE]`). These model-generated blocks are directly embedded into Tier 1 and Tier 2/3 drafts.
-* **Deterministic Statutory Guardrail:** All legal citations, dollar calculations, and statutory references remain governed by deterministic Python logic. If the model API times out or is unconfigured, the system automatically runs the deterministic fallback templates.
+* **In-Process Session Lifecycle Store:** Tracks state per browser session (`DRAFT_GENERATED` -> `REQUEST_SUBMITTED` -> `CANCELLATION_CONFIRMED`). A draft alone does NOT flag unauthorized rebilling. Only once the user marks the notice sent or confirmed does a subsequent charge trigger an anti-zombie alert. This is an in-process, browser-session-scoped prototype designed for demonstration rather than a multi-user persistent database.
+* **Google Gemma 2:** Prompts Gemma 2 via remote inference endpoint to author custom natural-language narrative blocks (`[DIPLOMATIC_BODY]` and `[DISPUTE_NARRATIVE]`). These model-generated blocks are directly embedded into Tier 1 and Tier 2/3 drafts.
+* **Deterministic Statutory Guardrail:** All legal citations, dollar calculations, and statutory references remain governed by deterministic Python logic. If the model API times out or is unconfigured, the system automatically falls back to deterministic rule templates.
 
 ### 3. Layer 3: 3-Tier Grounded Escalation Engine
 * **Tier 1 (Diplomatic Email):** Direct, courteous customer support cancellation request embedding Gemma's natural-language narrative.
 * **Tier 2 (FTC Regulatory Notice):** Formal notice citing ROSCA (15 U.S.C. § 8403), FTC Act Section 5, and FTC Negative Option principles.
-* **Tier 3 (Cardholder Dispute Statement):** Structured statement for card issuer dispute review under CFPB Regulation E (12 CFR § 1005.10(b)).
+* **Tier 3 (Cardholder Dispute Statement):** Structured statement for financial institution error resolution and stop-payment review under CFPB Regulation E (12 CFR § 1005.10(b)).
 
 ---
 
@@ -87,49 +87,56 @@ The workbench interface features 4 zero-click benchmark buttons:
 
 ---
 
-## 📊 Empirical Parser Benchmarks (Reproducible Test Set)
+## 📊 Curated Regression Benchmark (6 Test Cases)
 
-SubSloth AI evaluates its deterministic parser and dark-pattern heuristics against an automated test set of real-world transaction patterns (`GET /api/benchmarks/eval`):
-* **Classification Precision:** 100.0% (4 True Positives / 0 False Positives)
-* **Classification Recall:** 100.0% (4 True Positives / 0 False Negatives)
-* **Amount & Cadence Extraction Accuracy:** 100.0% (Exact monetary values and recurring intervals)
-* **Average Item Processing Latency:** ~0.55 ms
-* **Deterministic Guardrail Compliance:** 100% (Model output strictly bounded; 0 fabricated statutory citations)
+SubSloth AI evaluates its deterministic parser and dark-pattern heuristics against a curated, hand-authored 6-case regression test set (`GET /api/benchmarks/eval`). This regression suite verifies Layer 1 regex parsing and heuristic consistency in CI, rather than claiming to be a statistically representative population study:
+* **Classification Precision:** 100.0% (4 True Positives, 0 False Positives on curated suite)
+* **Classification Recall:** 100.0% (4 True Positives, 0 False Negatives on curated suite)
+* **Extraction Accuracy:** 100.0% (Exact monetary amount, cadence, and merchant matching)
+* **Observed Layer 1 Parser Latency:** ~0.06 ms/item (Deterministic CPU regex execution only; excludes network latency, remote Gemma generation, Render cold start, and full user workflow)
+* **Deterministic Guardrail Verification:** 4/4 dark-pattern draft evaluations verified (statutory citations confirmed, exact amounts preserved, and ungrounded civil penalty claims strictly filtered out)
+* **Error Accounting:** 0 parse failures, 0 merchant mismatches, 0 pattern-type mismatches
 
 ---
 
-## 🧪 Production Engineering: 23/23 Automated Pytest Suite
+## 🧪 Production Engineering: 28/28 Automated Pytest Suite
 
 ```text
 ============================= test session starts =============================
 platform win32 -- Python 3.13.15, pytest-9.1.1, pluggy-1.7.0
-collecting ... collected 23 items
+rootdir: G:\Hactoborfest2026\week_3\subsloth-ai
+collecting ... collected 28 items
 
-test_subsloth.py::test_ftc_policy_clauses_completeness PASSED            [  4%]
-test_subsloth.py::test_ftc_trigger_matching PASSED                       [  8%]
-test_subsloth.py::test_ftc_citation_formatting PASSED                    [ 13%]
-test_subsloth.py::test_extract_amount_standard PASSED                    [ 17%]
-test_subsloth.py::test_extract_amount_edge_cases PASSED                  [ 21%]
-test_subsloth.py::test_detect_cadence_patterns PASSED                    [ 26%]
-test_subsloth.py::test_identify_merchant_cleaning PASSED                 [ 30%]
-test_subsloth.py::test_classify_gym_trap PASSED                          [ 34%]
-test_subsloth.py::test_classify_sneaky_saas_trial PASSED                 [ 39%]
-test_subsloth.py::test_classify_ghost_micro_fee PASSED                   [ 43%]
-test_subsloth.py::test_classify_standard_subscription PASSED             [ 47%]
-test_subsloth.py::test_audit_statement_empty_input PASSED                [ 52%]
-test_subsloth.py::test_audit_statement_multi_item_calculation PASSED     [ 56%]
-test_subsloth.py::test_cancellation_store_lifecycle_transitions PASSED   [ 60%]
-test_subsloth.py::test_session_scoped_isolation PASSED                   [ 65%]
-test_subsloth.py::test_gemma_model_response_meaningfully_used PASSED     [ 69%]
-test_subsloth.py::test_gemma_deterministic_fallback_on_api_failure PASSED [ 73%]
-test_subsloth.py::test_fastapi_endpoints_health_and_benchmarks PASSED    [ 78%]
-test_subsloth.py::test_fastapi_audit_and_escalate_pipeline PASSED        [ 82%]
-test_subsloth.py::test_fastapi_cancellation_lifecycle_endpoints PASSED   [ 86%]
-test_subsloth.py::test_lifecycle_confirmation_guard PASSED               [ 91%]
-test_subsloth.py::test_fastapi_benchmark_eval_endpoint PASSED            [ 95%]
-test_subsloth.py::test_simulate_zombie_synthetic_seed PASSED             [100%]
+test_subsloth.py::test_ftc_policy_clauses_completeness PASSED            [  3%]
+test_subsloth.py::test_ftc_trigger_matching PASSED                       [  7%]
+test_subsloth.py::test_ftc_citation_formatting PASSED                    [ 10%]
+test_subsloth.py::test_extract_amount_standard PASSED                    [ 14%]
+test_subsloth.py::test_extract_amount_edge_cases PASSED                  [ 17%]
+test_subsloth.py::test_detect_cadence_patterns PASSED                    [ 21%]
+test_subsloth.py::test_identify_merchant_cleaning PASSED                 [ 25%]
+test_subsloth.py::test_classify_gym_trap PASSED                          [ 28%]
+test_subsloth.py::test_classify_sneaky_saas_trial PASSED                 [ 32%]
+test_subsloth.py::test_classify_ghost_micro_fee PASSED                   [ 35%]
+test_subsloth.py::test_classify_standard_subscription PASSED             [ 39%]
+test_subsloth.py::test_audit_statement_empty_input PASSED                [ 42%]
+test_subsloth.py::test_audit_statement_multi_item_calculation PASSED     [ 46%]
+test_subsloth.py::test_cancellation_store_lifecycle_transitions PASSED   [ 50%]
+test_subsloth.py::test_session_scoped_isolation PASSED                   [ 53%]
+test_subsloth.py::test_gemma_model_response_meaningfully_used PASSED     [ 57%]
+test_subsloth.py::test_gemma_deterministic_fallback_on_api_failure PASSED [ 60%]
+test_subsloth.py::test_fastapi_endpoints_health_and_benchmarks PASSED    [ 64%]
+test_subsloth.py::test_fastapi_audit_and_escalate_pipeline PASSED        [ 67%]
+test_subsloth.py::test_fastapi_cancellation_lifecycle_endpoints PASSED   [ 71%]
+test_subsloth.py::test_lifecycle_confirmation_guard PASSED               [ 75%]
+test_subsloth.py::test_fastapi_benchmark_eval_endpoint PASSED            [ 78%]
+test_subsloth.py::test_simulate_zombie_synthetic_seed PASSED             [ 82%]
+test_subsloth.py::test_benchmark_failed_parsing_tracked PASSED           [ 85%]
+test_subsloth.py::test_benchmark_multiple_parsed_subscriptions_tracked PASSED [ 89%]
+test_subsloth.py::test_benchmark_merchant_mismatch_tracked PASSED        [ 92%]
+test_subsloth.py::test_benchmark_pattern_type_mismatch_tracked PASSED    [ 96%]
+test_subsloth.py::test_benchmark_guarded_citation_verification_success_and_failure PASSED [100%]
 
-============================= 23 passed in 0.80s ==============================
+============================= 28 passed in 0.66s ==============================
 ```
 
 ---

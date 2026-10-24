@@ -96,14 +96,14 @@ def classify_dark_pattern(line_text: str, merchant: str, amount: float) -> Tuple
                 True,
                 "GYM_TRAP",
                 FTC_POLICY_CLAUSES["FTC_CLICK_TO_CANCEL"],
-                "Burdensome cancellation requirement (in-person or certified mail) flagged under ROSCA / FTC simple stopping mechanism standards."
+                "Burdensome cancellation requirement (in-person or certified mail) flagged for review under ROSCA (15 U.S.C. § 8403) simple stopping mechanism standards."
             )
     if is_gym and amount > 0:
         return (
             True,
             "GYM_TRAP",
             FTC_POLICY_CLAUSES["FTC_CLICK_TO_CANCEL"],
-            "Gym membership with documented retention barriers. Flagged under ROSCA (15 U.S.C. § 8403) simple cancellation standards."
+            "Gym membership with documented retention barriers. Flagged for review under ROSCA (15 U.S.C. § 8403) simple cancellation standards."
         )
 
     # 2. Test for Sneaky SaaS Trial Conversion
@@ -113,7 +113,7 @@ def classify_dark_pattern(line_text: str, merchant: str, amount: float) -> Tuple
                 True,
                 "SNEAKY_SAAS_TRIAL",
                 FTC_POLICY_CLAUSES["FTC_NEGATIVE_OPTION_DISCLOSURE"],
-                "Trial-to-paid auto-conversion scenario flagged under FTC Negative Option pre-consent disclosure standards."
+                "Trial-to-paid auto-conversion scenario flagged for review under Section 5 pre-consent disclosure standards."
             )
 
     # 3. Test for Ghost Micro-Fee
@@ -140,7 +140,7 @@ def classify_dark_pattern(line_text: str, merchant: str, amount: float) -> Tuple
         False,
         "STANDARD_SUBSCRIPTION",
         FTC_POLICY_CLAUSES["EFTA_REG_E_CHARGEBACK"],
-        "Preauthorized electronic debit covered by EFTA Reg E revocation rights."
+        "Preauthorized electronic debit covered by CFPB Regulation E revocation rights (12 CFR § 1005.10)."
     )
 
 

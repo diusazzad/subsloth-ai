@@ -33,6 +33,11 @@ from core.backboard_client import (
     synthesize_cancellation_tiers,
     memory_store
 )
+from core.benchmark_eval import (
+    evaluate_test_set,
+    verify_deterministic_guardrails,
+    run_benchmark_evaluation
+)
 
 client = TestClient(app)
 
@@ -420,4 +425,105 @@ def test_simulate_zombie_synthetic_seed():
     assert data["zombie_violation_intercepted"] is True
     assert data["is_synthetic_demo_seed"] is True
     assert "disclaimer" in data
+
+
+# =====================================================================
+# 8. Empirical Benchmark Engine & Failure Mode Verification Tests
+# =====================================================================
+def test_benchmark_failed_parsing_tracked():
+    """Verifies unparseable input is explicitly accounted for in parse_failures and confusion matrix."""
+    failing_case = [{
+        "input": "Unrelated bank memo without amounts or subscription keywords",
+        "expected_amount": 10.0,
+        "expected_cadence": "monthly",
+        "expected_merchant": "Acme",
+        "expected_dark_pattern": True,
+        "expected_pattern_type": "GYM_TRAP"
+    }]
+    res = evaluate_test_set(failing_case)
+    assert res["total_test_cases"] == 1
+    assert res["parse_failures"] == 1
+    assert res["false_negatives"] == 1
+    assert res["extraction_accuracy_pct"] == 0.0
+
+
+def test_benchmark_multiple_parsed_subscriptions_tracked():
+    """Verifies multi-item input per single case is recorded as parse_failure instead of silent drop."""
+    multi_case = [{
+        "input": "2026-10-01 NETFLIX $19.99/MO\n2026-10-02 SPOTIFY $11.99/MO",
+        "expected_amount": 19.99,
+        "expected_cadence": "monthly",
+        "expected_merchant": "Netflix",
+        "expected_dark_pattern": False,
+        "expected_pattern_type": "STANDARD_SUBSCRIPTION"
+    }]
+    res = evaluate_test_set(multi_case)
+    assert res["total_test_cases"] == 1
+    assert res["parse_failures"] == 1
+    assert res["false_positives"] == 1
+    assert res["extraction_accuracy_pct"] == 0.0
+
+
+def test_benchmark_merchant_mismatch_tracked():
+    """Verifies merchant extraction mismatch reduces extraction accuracy and is tracked."""
+    mismatch_case = [{
+        "input": "2026-10-01 PLANET FITNESS $29.99/MO (in-person required)",
+        "expected_amount": 29.99,
+        "expected_cadence": "monthly",
+        "expected_merchant": "Gold's Gym",  # Expected mismatch
+        "expected_dark_pattern": True,
+        "expected_pattern_type": "GYM_TRAP"
+    }]
+    res = evaluate_test_set(mismatch_case)
+    assert res["total_test_cases"] == 1
+    assert res["parse_failures"] == 0
+    assert res["merchant_mismatches"] == 1
+    assert res["extraction_accuracy_pct"] == 0.0
+
+
+def test_benchmark_pattern_type_mismatch_tracked():
+    """Verifies classification pattern-type mismatch counts as false positive and is tracked."""
+    pattern_mismatch_case = [{
+        "input": "2026-10-01 PLANET FITNESS $29.99/MO (in-person club visit required)",
+        "expected_amount": 29.99,
+        "expected_cadence": "monthly",
+        "expected_merchant": "Planet Fitness",
+        "expected_dark_pattern": True,
+        "expected_pattern_type": "GHOST_MICRO_FEE"  # Detected will be GYM_TRAP
+    }]
+    res = evaluate_test_set(pattern_mismatch_case)
+    assert res["total_test_cases"] == 1
+    assert res["pattern_type_mismatches"] == 1
+    assert res["true_positives"] == 0
+    assert res["false_positives"] == 1
+    assert res["classification_precision_pct"] == 0.0
+
+
+def test_benchmark_guarded_citation_verification_success_and_failure():
+    """Verifies active deterministic guardrail verification passes standard drafts and rejects hallucinations."""
+    # 1. Normal execution passes
+    assert verify_deterministic_guardrails("Planet Fitness", 29.99, "GYM_TRAP") is True
+
+    # 2. Corrupted draft missing ROSCA statutory citation must fail guardrails
+    with patch("core.benchmark_eval.synthesize_cancellation_tiers") as mock_synth:
+        mock_synth.return_value = {
+            "tiers": {
+                "tier_1_diplomatic": "Please cancel.",
+                "tier_2_ftc_legal": "Notice under generic law without specific statutes. $29.99",
+                "tier_3_chargeback": "Pursuant to 12 CFR § 1005.10 dispute. $29.99"
+            }
+        }
+        assert verify_deterministic_guardrails("Planet Fitness", 29.99, "GYM_TRAP") is False
+
+    # 3. Corrupted draft containing hallucinated civil penalties ($50,120) must fail guardrails
+    with patch("core.benchmark_eval.synthesize_cancellation_tiers") as mock_synth:
+        mock_synth.return_value = {
+            "tiers": {
+                "tier_1_diplomatic": "Please cancel.",
+                "tier_2_ftc_legal": "Pursuant to 15 U.S.C. § 8403, subject to civil penalties of $50,120. $29.99",
+                "tier_3_chargeback": "Pursuant to 12 CFR § 1005.10 dispute. $29.99"
+            }
+        }
+        assert verify_deterministic_guardrails("Planet Fitness", 29.99, "GYM_TRAP") is False
+
 
