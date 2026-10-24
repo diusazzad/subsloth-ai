@@ -81,11 +81,13 @@ class SessionCancellationStore:
         return None
 
     def confirm_cancellation(self, merchant: str, session_id: str = "demo-session") -> Optional[Dict[str, Any]]:
-        """Transitions state: User confirms merchant acknowledged cancellation."""
+        """Transitions state: User confirms merchant acknowledged cancellation. Requires REQUEST_SUBMITTED status first."""
         session = self._get_session(session_id)
         key = merchant.strip().lower()
         if key in session:
             record = session[key]
+            if record["status"] != CancellationStatus.REQUEST_SUBMITTED:
+                raise ValueError("Cannot confirm cancellation before notice request has been marked submitted.")
             record["status"] = CancellationStatus.CANCELLATION_CONFIRMED
             record["confirmed_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
             return record

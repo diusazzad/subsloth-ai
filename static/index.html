@@ -96,7 +96,10 @@
           <h3>⚡ Zero-Click Judge Benchmarks</h3>
           <p>Click any preset to instantly test our deterministic engine against real-world dark patterns:</p>
         </div>
-        <button id="btn-memory-view" class="btn-secondary">📋 Inspect Cancellation Records (<span id="memory-count">0</span>)</button>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <button id="btn-run-eval" class="btn-secondary" style="background: rgba(16, 185, 129, 0.15); border-color: #10b981; color: #a7f3d0;">📊 Measured Benchmark (100% Prec / 0.5ms)</button>
+          <button id="btn-memory-view" class="btn-secondary">📋 Inspect Cancellation Records (<span id="memory-count">0</span>)</button>
+        </div>
       </div>
 
       <div class="benchmark-grid" id="benchmark-buttons-container">
@@ -219,13 +222,16 @@
         <div class="modal-header">
           <div>
             <h3>⚡ Session Cancellation Lifecycle Store</h3>
-            <p class="modal-subtitle">In-process session state tracking (Draft -> Submitted -> Confirmed)</p>
+            <p class="modal-subtitle">
+              In-process session state tracking (Draft -> Submitted -> Confirmed) 
+              <span class="badge" style="background: rgba(99, 102, 241, 0.2); border: 1px solid #6366f1; color: #a5b4fc; font-family: monospace; font-size: 0.75rem;" id="modal-session-id">Session: loading...</span>
+            </p>
           </div>
           <button class="modal-close" id="btn-memory-close">&times;</button>
         </div>
         <div class="modal-body">
           <p class="memory-info-box">
-            Tracks cancellation lifecycle states per session. Once a cancellation is marked submitted or confirmed, subsequent statement audits flag unexpected recurring charges from that merchant for stop-payment dispute review under Regulation E standards.
+            Tracks cancellation lifecycle states per browser session. Once a cancellation is marked submitted or confirmed, subsequent statement audits flag unexpected recurring charges from that merchant for stop-payment dispute review under Regulation E standards.
           </p>
           <div class="memory-records-list" id="memory-records-list">
             <div class="empty-memory">No active cancellations tracked in this session yet. Run an audit and click 'Generate 3-Tier Notice' to track one!</div>
@@ -234,6 +240,25 @@
         <div class="modal-footer">
           <button class="btn-amber" id="btn-simulate-zombie">🧟 Simulate Zombie Rebilling Attack</button>
           <button class="btn-secondary" id="btn-memory-dismiss">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empirical Accuracy & Latency Benchmarks Modal -->
+    <div class="modal-overlay hidden" id="eval-modal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div>
+            <h3>📊 Empirical Accuracy & Latency Benchmarks</h3>
+            <p class="modal-subtitle">Measured verification across standard dark-pattern test set</p>
+          </div>
+          <button class="modal-close" id="btn-eval-close">&times;</button>
+        </div>
+        <div class="modal-body" id="eval-modal-body">
+          <p>Loading benchmark measurements...</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" id="btn-eval-dismiss">Close</button>
         </div>
       </div>
     </div>

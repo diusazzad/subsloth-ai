@@ -123,7 +123,7 @@ def classify_dark_pattern(line_text: str, merchant: str, amount: float) -> Tuple
                 True,
                 "GHOST_MICRO_FEE",
                 FTC_POLICY_CLAUSES["ROSCA_UNDISCLOSED_FEES"],
-                "Undisclosed recurring micro-fee or stealth addon violates ROSCA (15 U.S.C. § 8403)."
+                "Potential undisclosed recurring micro-fee or stealth addon flagged for review under ROSCA (15 U.S.C. § 8403)."
             )
     
     # Check for micro-fee by amount heuristic ($1.00 - $9.99 with 'fee' or 'addon' context)
@@ -132,7 +132,7 @@ def classify_dark_pattern(line_text: str, merchant: str, amount: float) -> Tuple
             True,
             "GHOST_MICRO_FEE",
             FTC_POLICY_CLAUSES["ROSCA_UNDISCLOSED_FEES"],
-            "Unsolicited micro-charge detected matching dark pattern drip pricing."
+            "Potential unsolicited micro-charge flagged matching drip pricing heuristics."
         )
 
     # 4. Standard recurring subscription (Protected under EFTA Reg E)
@@ -218,5 +218,6 @@ def audit_statement(raw_input: str) -> Dict[str, Any]:
             "hours_saved": hours_saved,
             "money_rescued_annual": round(total_annual, 2),
             "sloth_rating": "Master Sloth Level (Maximum Laziness Achieved)" if len(detected_items) > 0 else "Clean Slate"
-        }
+        },
+        "disclaimer": "SubSloth AI provides automated heuristic screening for consumer review. Outputs are informational drafts and do not constitute formal legal conclusions or guarantees."
     }

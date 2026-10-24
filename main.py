@@ -19,6 +19,7 @@ from core.backboard_client import (
     memory_store,
     CancellationStatus
 )
+from core.benchmark_eval import run_benchmark_evaluation
 
 
 app = FastAPI(
@@ -221,8 +222,12 @@ def mark_cancellation_submitted(payload: StatusUpdateRequest):
 
 @app.post("/api/cancellations/confirm")
 def confirm_cancellation(payload: StatusUpdateRequest):
-    """Transitions a cancellation draft to CANCELLATION_CONFIRMED status."""
-    record = memory_store.confirm_cancellation(payload.merchant, session_id=payload.session_id or "demo-session")
+    """Transitions a cancellation draft to CANCELLATION_CONFIRMED status. Requires REQUEST_SUBMITTED status first."""
+    session_id = payload.session_id or "demo-session"
+    try:
+        record = memory_store.confirm_cancellation(payload.merchant, session_id=session_id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     if not record:
         raise HTTPException(status_code=404, detail="No cancellation record found for this merchant.")
     return {"status": "success", "record": record}
@@ -236,10 +241,20 @@ def get_memory_state(session_id: Optional[str] = "demo-session"):
     records = memory_store.list_cancellations(session_id=session_id or "demo-session")
     return {
         "status": "success",
+        "session_id": session_id or "demo-session",
         "total_active_cancellations": len(records),
         "records": records,
         "description": "Session-scoped prototype store tracking cancellation lifecycle states (DRAFT_GENERATED, REQUEST_SUBMITTED, CANCELLATION_CONFIRMED)."
     }
+
+
+@app.get("/api/benchmarks/eval")
+def get_benchmark_evaluation():
+    """
+    Returns measured empirical benchmark evaluation across standard test sets:
+    extraction accuracy, classification precision & recall, and average latency.
+    """
+    return run_benchmark_evaluation()
 
 
 @app.post("/api/simulate-zombie-rebill")
@@ -250,19 +265,23 @@ def simulate_zombie(payload: ZombieSimulateRequest):
     """
     session_id = payload.session_id or "demo-session"
     record = memory_store.check_zombie_rebill(payload.merchant, payload.amount, session_id=session_id)
+    is_synthetic_seed = False
     if not record:
-        notice_id = f"SLOTH-PREV-{int(payload.amount)}"
+        is_synthetic_seed = True
+        notice_id = f"SLOTH-DEMO-{int(payload.amount)}"
         memory_store.record_draft(payload.merchant, payload.amount, notice_id, "GYM_TRAP", session_id=session_id)
         memory_store.mark_submitted(payload.merchant, session_id=session_id)
         record = memory_store.check_zombie_rebill(payload.merchant, payload.amount, session_id=session_id)
 
     return {
         "zombie_violation_intercepted": True,
+        "is_synthetic_demo_seed": is_synthetic_seed,
         "merchant": payload.merchant,
         "unauthorized_amount": payload.amount,
         "cancellation_notice_id": record["notice_id"],
         "status": record["status"],
         "recommended_escalation": "TIER_3_BANK_CHARGEBACK_REVIEW",
-        "legal_basis": "12 CFR § 1005.10(b) (CFPB Regulation E Stop-Payment)",
-        "memory_details": record
+        "legal_basis": "12 CFR § 1005.10(b) (CFPB Regulation E Stop-Payment Review)",
+        "memory_details": record,
+        "disclaimer": "Simulated demonstration for evaluation purposes. In production, alerts require prior user notice submission."
     }

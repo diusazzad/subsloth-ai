@@ -373,3 +373,51 @@ def test_fastapi_cancellation_lifecycle_endpoints():
     })
     assert resp_conf.status_code == 200
     assert resp_conf.json()["record"]["status"] == CancellationStatus.CANCELLATION_CONFIRMED
+
+
+def test_lifecycle_confirmation_guard():
+    """Verifies that direct transition from DRAFT to CONFIRMED without submission is blocked."""
+    test_session = "guard-lifecycle-test"
+    memory_store.clear(session_id=test_session)
+
+    # 1. Record Draft
+    memory_store.record_draft("Blink Fitness", 19.99, "SLOTH-BLK-1", "GYM_TRAP", session_id=test_session)
+
+    # 2. Direct confirmation attempt must fail
+    resp_bad = client.post("/api/cancellations/confirm", json={
+        "merchant": "Blink Fitness",
+        "session_id": test_session
+    })
+    assert resp_bad.status_code == 400
+    assert "Cannot confirm cancellation before notice request has been marked submitted" in resp_bad.json()["detail"]
+
+
+def test_fastapi_benchmark_eval_endpoint():
+    """Verifies empirical benchmark evaluation API returns measured accuracy and latencies."""
+    resp = client.get("/api/benchmarks/eval")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["total_test_cases"] >= 6
+    assert data["extraction_accuracy_pct"] == 100.0
+    assert data["classification_precision_pct"] == 100.0
+    assert data["classification_recall_pct"] == 100.0
+    assert data["avg_item_latency_ms"] < 10.0
+    assert data["deterministic_guardrail_pass"] is True
+
+
+def test_simulate_zombie_synthetic_seed():
+    """Verifies transparent simulation response with synthetic seed identification."""
+    test_session = "zombie-sim-test"
+    memory_store.clear(session_id=test_session)
+
+    resp = client.post("/api/simulate-zombie-rebill", json={
+        "merchant": "Gold's Gym",
+        "amount": 49.99,
+        "session_id": test_session
+    })
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["zombie_violation_intercepted"] is True
+    assert data["is_synthetic_demo_seed"] is True
+    assert "disclaimer" in data
+

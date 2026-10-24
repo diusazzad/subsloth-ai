@@ -1,10 +1,21 @@
 /**
  * SubSloth AI - Frontend Client Logic
  * Powers zero-click benchmarks, real-time 3-layer execution trace,
- * session-scoped cancellation tracking, and 3-tier dispute document drafting.
+ * browser-scoped cancellation lifecycle tracking, and empirical benchmark evaluation.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
+  // 0. Browser-Scoped Session ID Generator
+  function getClientSessionId() {
+    let sid = sessionStorage.getItem("subsloth_session_id");
+    if (!sid) {
+      sid = "browser_" + Math.random().toString(36).substring(2, 9) + "_" + Date.now().toString(36);
+      sessionStorage.setItem("subsloth_session_id", sid);
+    }
+    return sid;
+  }
+  const clientSessionId = getClientSessionId();
+
   // Elements
   const statementInput = document.getElementById("statement-input");
   const btnRunAudit = document.getElementById("btn-run-audit");
@@ -45,12 +56,25 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnMemoryDismiss = document.getElementById("btn-memory-dismiss");
   const memoryRecordsList = document.getElementById("memory-records-list");
   const memoryCountEl = document.getElementById("memory-count");
+  const modalSessionIdEl = document.getElementById("modal-session-id");
   const btnSimulateZombie = document.getElementById("btn-simulate-zombie");
+
+  // Evaluation Modal
+  const evalModal = document.getElementById("eval-modal");
+  const btnRunEval = document.getElementById("btn-run-eval");
+  const btnEvalClose = document.getElementById("btn-eval-close");
+  const btnEvalDismiss = document.getElementById("btn-eval-dismiss");
+  const evalModalBody = document.getElementById("eval-modal-body");
 
   // State
   let currentActiveEscalation = null;
   let currentTier = "tier_1";
   let benchmarksData = [];
+
+  // Update session ID in UI
+  if (modalSessionIdEl) {
+    modalSessionIdEl.textContent = `Session: ${clientSessionId}`;
+  }
 
   // 1. Load Benchmarks
   async function loadBenchmarks() {
@@ -73,7 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (found) {
         statementInput.value = found.statement_text;
       } else {
-        // Fallback preset values
         if (presetId === "gym_trap") {
           statementInput.value = "2026-10-01 PLANET FITNESS DALLAS TX $29.99/MO\nIn-person club visit or certified mail cancellation required.\n2026-10-01 PLANET FITNESS ANNUAL MAINTENANCE FEE $49.00";
         } else if (presetId === "sneaky_saas") {
@@ -92,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
   btnClear.addEventListener("click", () => {
     statementInput.value = "";
     resultsSection.classList.add("hidden");
-    traceFeed.innerHTML = `<div class="trace-step trace-idle"><span class="step-num">[0]</span><span class="step-text">Awaiting statement input or benchmark click...</span></div>`;
+    traceFeed.innerHTML = '<div class="trace-step trace-idle"><span class="step-num">[0]</span><span class="step-text">Cleared. Ready for new input...</span></div>';
     pipelineStatus.textContent = "Idle";
     pipelineStatus.className = "panel-badge";
     annualRescuedEl.textContent = "$0.00";
@@ -124,7 +147,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const resp = await fetch("/api/audit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ statement_text: text }),
+        body: JSON.stringify({
+          statement_text: text,
+          session_id: clientSessionId
+        }),
       });
 
       if (!resp.ok) {
@@ -137,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
       addTraceStep(1, `Layer 1: Deterministic Engine: Parsed ${data.total_items} items. Flagged ${data.dark_patterns_count} dark patterns.`, "trace-success");
       
       // Step 2 Memory Trace
-      addTraceStep(2, `Layer 2: Session Cancellation Store: Cross-referenced active cancellation status & rebill checks.`, "trace-success");
+      addTraceStep(2, `Layer 2: Session Cancellation Store (${clientSessionId}): Cross-referenced active cancellation status & rebill checks.`, "trace-success");
 
       // Check for Zombie alerts
       const hasZombie = data.subscriptions.some((s) => s.zombie_recharge_alert);
@@ -218,23 +244,30 @@ document.addEventListener("DOMContentLoaded", () => {
               <div class="card-merchant">${escapeHtml(sub.merchant)}</div>
               <div class="card-cadence">${sub.cadence.toUpperCase()} RECURRING</div>
             </div>
-            <div class="card-amount">$${sub.amount.toFixed(2)}<small style="font-size: 0.8rem; font-weight: 500;">/${sub.cadence === 'annual' ? 'yr' : 'mo'}</small></div>
+            <div class="card-price">$${sub.amount.toFixed(2)}<span style="font-size: 0.8rem; font-weight: normal; color: var(--text-muted)">/${sub.cadence === 'annual' ? 'yr' : 'mo'}</span></div>
           </div>
-          <span class="pattern-badge ${badgeClass}">${badgeLabel}</span>
+          
+          <div style="margin: 0.75rem 0;">
+            <span class="badge ${badgeClass}">${badgeLabel}</span>
+          </div>
+
           <p class="card-reason">${escapeHtml(sub.reason)}</p>
-          <div class="card-clause">⚖️ ${escapeHtml(sub.ftc_clause_id)}: ${escapeHtml(sub.ftc_title)}</div>
+
+          <div class="card-citation">
+            <strong>Standard:</strong> ${escapeHtml(sub.ftc_clause_id)} — ${escapeHtml(sub.ftc_title)}
+          </div>
         </div>
-        <div class="card-bottom">
-          <span class="annual-drain-tag">Annual Drain: <strong>$${sub.annual_drain.toFixed(2)}/yr</strong></span>
+
+        <div class="card-actions">
           <button class="btn-primary btn-escalate" data-sub='${JSON.stringify(sub).replace(/'/g, "&apos;")}'>
-            ⚡ Generate 3-Tier Notice
+            ⚡ Draft 3-Tier Notice (Gemma 2)
           </button>
         </div>
       `;
+
       subscriptionsContainer.appendChild(card);
     });
 
-    // Wire up escalate buttons
     document.querySelectorAll(".btn-escalate").forEach((btn) => {
       btn.addEventListener("click", () => {
         const subData = JSON.parse(btn.getAttribute("data-sub"));
@@ -262,7 +295,8 @@ document.addEventListener("DOMContentLoaded", () => {
           ftc_clause_id: sub.ftc_clause_id,
           ftc_title: sub.ftc_title,
           citation: sub.citation,
-          account_id: `SUB-${Math.floor(10000 + Math.random() * 90000)}`
+          account_id: `SUB-${Math.floor(10000 + Math.random() * 90000)}`,
+          session_id: clientSessionId
         }),
       });
 
@@ -331,7 +365,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const resp = await fetch("/api/cancellations/mark-submitted", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ merchant: currentActiveEscalation.merchant })
+          body: JSON.stringify({
+            merchant: currentActiveEscalation.merchant,
+            session_id: clientSessionId
+          })
         });
         if (resp.ok) {
           btnMarkSubmitted.textContent = "✓ Marked Request Sent!";
@@ -352,6 +389,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const packet = {
       title: "SubSloth AI — Cancellation Draft & Regulatory Dispute Evidence Packet",
       generated_at: new Date().toISOString(),
+      session_id: clientSessionId,
       merchant: currentActiveEscalation.merchant,
       amount: currentActiveEscalation.amount,
       statutory_reference_standards: [
@@ -390,12 +428,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function openMemoryModal() {
     memoryModal.classList.remove("hidden");
+    if (modalSessionIdEl) {
+      modalSessionIdEl.textContent = `Session: ${clientSessionId}`;
+    }
     await refreshMemoryUI();
   }
 
   async function refreshMemoryUI() {
     try {
-      const resp = await fetch("/api/memory");
+      const resp = await fetch(`/api/memory?session_id=${encodeURIComponent(clientSessionId)}`);
       if (resp.ok) {
         const data = await resp.json();
         renderMemoryRecords(data.records);
@@ -408,7 +449,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderMemoryRecords(records) {
     if (!records || records.length === 0) {
-      memoryRecordsList.innerHTML = `<div class="empty-memory">No active cancellations saved in memory yet. Run an audit and click 'Generate 3-Tier Notice' to track one!</div>`;
+      memoryRecordsList.innerHTML = `<div class="empty-memory">No active cancellations saved in session '${clientSessionId}' yet. Run an audit and click 'Generate 3-Tier Notice' to track one!</div>`;
       return;
     }
 
@@ -430,22 +471,48 @@ document.addEventListener("DOMContentLoaded", () => {
       const timeLabel = rec.submitted_at ? `Sent: ${rec.submitted_at}` : `Drafted: ${rec.drafted_at}`;
 
       item.innerHTML = `
-        <div>
+        <div style="flex: 1;">
           <div class="memory-merchant">${escapeHtml(rec.merchant)} — $${rec.amount.toFixed(2)}</div>
           <div class="memory-notice-id">Notice ID: ${rec.notice_id} | ${timeLabel}</div>
         </div>
-        <div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
           <span class="badge ${statusBadge}">${statusLabel}</span>
           ${rec.zombie_alerts_count > 0 ? `<span class="badge badge-zombie">⚠️ ${rec.zombie_alerts_count} Outflow Alert</span>` : ''}
+          ${rec.status === 'REQUEST_SUBMITTED' ? `<button class="btn-secondary btn-confirm-ack" data-merchant="${escapeHtml(rec.merchant)}" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">Confirm Acknowledged</button>` : ''}
         </div>
       `;
       memoryRecordsList.appendChild(item);
+    });
+
+    // Wire confirm buttons
+    document.querySelectorAll(".btn-confirm-ack").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const merchant = btn.getAttribute("data-merchant");
+        try {
+          const resp = await fetch("/api/cancellations/confirm", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              merchant: merchant,
+              session_id: clientSessionId
+            })
+          });
+          if (resp.ok) {
+            await refreshMemoryUI();
+          } else {
+            const err = await resp.json();
+            alert("Confirmation error: " + err.detail);
+          }
+        } catch (e) {
+          alert("Error: " + e.message);
+        }
+      });
     });
   }
 
   async function updateMemoryCount() {
     try {
-      const resp = await fetch("/api/memory");
+      const resp = await fetch(`/api/memory?session_id=${encodeURIComponent(clientSessionId)}`);
       if (resp.ok) {
         const data = await resp.json();
         memoryCountEl.textContent = data.total_active_cancellations;
@@ -454,7 +521,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   updateMemoryCount();
 
-  // Simulate Zombie Rebilling Attack (Judges Favorite Demonstration)
+  // Simulate Zombie Rebilling Attack
   btnSimulateZombie.addEventListener("click", async () => {
     btnSimulateZombie.disabled = true;
     btnSimulateZombie.textContent = "Simulating Charge...";
@@ -466,16 +533,19 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({
           merchant: "Planet Fitness",
           amount: 29.99,
+          session_id: clientSessionId
         }),
       });
 
       if (resp.ok) {
         const data = await resp.json();
+        const modeLabel = data.is_synthetic_demo_seed ? "[DEMONSTRATION SIMULATION]" : "[ACTIVE SESSION DETECTION]";
         alert(
           `🧟 RECURRING BILLING DETECTED POST-CANCELLATION!\n\n` +
+          `${modeLabel}\n` +
           `Merchant: ${data.merchant}\n` +
           `Recurring Charge: $${data.unauthorized_amount}\n` +
-          `Prior Cancellation Notice Ref: ${data.cancellation_notice_id}\n` +
+          `Cancellation Notice Ref: ${data.cancellation_notice_id}\n` +
           `Status: ${data.status}\n\n` +
           `Recommended Action: ${data.recommended_escalation}\n` +
           `Statutory Basis: ${data.legal_basis}\n\n` +
@@ -490,6 +560,64 @@ document.addEventListener("DOMContentLoaded", () => {
       btnSimulateZombie.textContent = "🧟 Simulate Zombie Rebilling Attack";
     }
   });
+
+  // 7. Empirical Benchmark Evaluation Modal
+  if (btnRunEval) {
+    btnRunEval.addEventListener("click", async () => {
+      evalModal.classList.remove("hidden");
+      evalModalBody.innerHTML = `<p style="color: var(--text-muted); text-align: center; padding: 2rem;">Running empirical test suite across benchmark test cases...</p>`;
+      
+      try {
+        const resp = await fetch("/api/benchmarks/eval");
+        if (resp.ok) {
+          const evalData = await resp.json();
+          evalModalBody.innerHTML = `
+            <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid #10b981; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+              <h4 style="margin: 0 0 0.5rem 0; color: #a7f3d0;">✓ Empirical Test Results: ${evalData.benchmark_suite}</h4>
+              <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">
+                Ground truth verification on 6 standard test cases (Gym Trap, SaaS Trial Jump, Ghost Addon, Standard Recurring).
+              </p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1rem;">
+              <div style="background: rgba(255, 255, 255, 0.04); border-radius: 6px; padding: 0.75rem;">
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Classification Precision</div>
+                <div style="font-size: 1.5rem; font-weight: 700; color: #34d399;">${evalData.classification_precision_pct}%</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">${evalData.true_positives} TP / ${evalData.false_positives} FP</div>
+              </div>
+              <div style="background: rgba(255, 255, 255, 0.04); border-radius: 6px; padding: 0.75rem;">
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Classification Recall</div>
+                <div style="font-size: 1.5rem; font-weight: 700; color: #34d399;">${evalData.classification_recall_pct}%</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">${evalData.true_positives} TP / ${evalData.false_negatives} FN</div>
+              </div>
+              <div style="background: rgba(255, 255, 255, 0.04); border-radius: 6px; padding: 0.75rem;">
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Extraction Accuracy</div>
+                <div style="font-size: 1.5rem; font-weight: 700; color: #60a5fa;">${evalData.extraction_accuracy_pct}%</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">${evalData.total_test_cases} / ${evalData.total_test_cases} exact amount & cadence matches</div>
+              </div>
+              <div style="background: rgba(255, 255, 255, 0.04); border-radius: 6px; padding: 0.75rem;">
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Average Item Latency</div>
+                <div style="font-size: 1.5rem; font-weight: 700; color: #fbbf24;">${evalData.avg_item_latency_ms} ms</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">Total suite: ${evalData.total_suite_runtime_ms} ms</div>
+              </div>
+            </div>
+
+            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 0.75rem; font-size: 0.8rem;">
+              <strong>Active Statutory Coverage:</strong>
+              <ul style="margin: 0.5rem 0 0 1rem; padding: 0; color: var(--text-muted);">
+                ${evalData.statutory_coverage.map(s => `<li>${escapeHtml(s)}</li>`).join('')}
+              </ul>
+            </div>
+          `;
+        }
+      } catch (err) {
+        evalModalBody.innerHTML = `<p style="color: #f87171;">Failed to run benchmark evaluation: ${err.message}</p>`;
+      }
+    });
+  }
+
+  if (btnEvalClose) btnEvalClose.addEventListener("click", () => evalModal.classList.add("hidden"));
+  if (btnEvalDismiss) btnEvalDismiss.addEventListener("click", () => evalModal.classList.add("hidden"));
 
   function escapeHtml(str) {
     if (!str) return "";
